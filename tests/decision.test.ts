@@ -1,72 +1,29 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { fallbackDecision } from "../src/decision.js";
-import type { FlexEvent, PrivateData } from "../src/types.js";
+import { AgentDecisionSchema } from "../src/decision.js";
 
-const privateData: PrivateData = {
-  companyProfile: {
-    policies: {
-      minimum_utilisation_price_gbp_per_mwh: 300,
-      max_low_risk_power_kw: 80,
-      max_auto_dispatch_duration_minutes: 60
-    }
-  },
-  depotOps: {},
-  bessAssets: {
-    assets: [
-      {
-        asset_id: "BESS-HAL-01",
-        status: "available",
-        state_of_charge_percent: 72,
-        max_discharge_kw: 100,
-        reserved_for_resilience_percent: 35
-      }
-    ]
-  }
-};
+test("AgentDecisionSchema accepts valid OpenCLAW decision JSON", () => {
+  const decision = AgentDecisionSchema.parse({
+    action: "schedule_dispatch",
+    asset_id: "BESS-HAL-01",
+    power_kw: 60,
+    duration_minutes: 30,
+    risk_level: "low",
+    confidence: "high",
+    rationale: "BESS is available and the event is within guardrails.",
+    human_review_required: false,
+    settlement_evidence_notes: "Store event id, command response, and timestamp."
+  });
 
-test("fallbackDecision dispatches low-risk economic events", () => {
-  const event: FlexEvent = {
-    fu_id: "event-1",
-    utilisation_mw_req: 0.06,
-    utilisation_price: 1200,
-    hours_requested: 0.5
-  };
-
-  const decision = fallbackDecision(event, privateData);
-
-  assert.equal(decision.action, "dispatch_now");
-  assert.equal(decision.risk_level, "low");
-  assert.equal(decision.power_kw, 60);
-  assert.equal(decision.duration_minutes, 30);
-  assert.equal(decision.human_review_required, false);
+  assert.equal(decision.action, "schedule_dispatch");
+  assert.equal(decision.asset_id, "BESS-HAL-01");
 });
 
-test("fallbackDecision escalates oversized events to human review", () => {
-  const event: FlexEvent = {
-    fu_id: "event-2",
-    utilisation_mw_req: 0.15,
-    utilisation_price: 1200,
-    hours_requested: 1
-  };
+test("AgentDecisionSchema rejects incomplete decision JSON", () => {
+  const result = AgentDecisionSchema.safeParse({
+    action: "dispatch_now",
+    asset_id: "BESS-HAL-01"
+  });
 
-  const decision = fallbackDecision(event, privateData);
-
-  assert.equal(decision.action, "human_review");
-  assert.equal(decision.risk_level, "high");
-  assert.equal(decision.human_review_required, true);
-});
-
-test("fallbackDecision skips uneconomic events", () => {
-  const event: FlexEvent = {
-    fu_id: "event-3",
-    utilisation_mw_req: 0.06,
-    utilisation_price: 50,
-    hours_requested: 0.5
-  };
-
-  const decision = fallbackDecision(event, privateData);
-
-  assert.equal(decision.action, "skip");
-  assert.equal(decision.power_kw, 0);
+  assert.equal(result.success, false);
 });

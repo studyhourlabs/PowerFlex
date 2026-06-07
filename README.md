@@ -254,11 +254,11 @@ Fetches public flex events and private data APIs. Also uses replay flex events o
 
 `src/openclaw.ts`
 
-Calls `openclaw agent`. Parses the harness response and validates the decision JSON schema.
+Builds the real decision prompt, calls `openclaw agent`, parses the harness response, and validates the returned decision JSON.
 
 `src/decision.ts`
 
-Contains the decision schema and a local guardrail helper used only by unit tests.
+Contains only the decision schema used to validate OpenCLAW output. It does not make decisions.
 
 `src/action.ts`
 

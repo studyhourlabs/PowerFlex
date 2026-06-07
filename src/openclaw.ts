@@ -38,7 +38,7 @@ export async function askOpenClawForDecision(input: {
   return parseOpenClawDecision(stdout);
 }
 
-function buildPrompt(input: {
+export function buildPrompt(input: {
   run: number;
   event: FlexEvent;
   privateData: PrivateData;
