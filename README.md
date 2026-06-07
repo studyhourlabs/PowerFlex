@@ -1,5 +1,7 @@
 # PowerFlex Demo
 
+https://youtu.be/1skbM7RkNg8?si=tNBe11Y5_Q8IanGp
+
 This project demonstrates a PowerFlex workflow for deciding and executing depot battery flexibility actions.
 
 The TypeScript code handles deterministic orchestration. The OpenCLAW harness handles the reasoning decision. APIs handle all external data and actions.
