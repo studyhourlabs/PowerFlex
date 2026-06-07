@@ -1,4 +1,6 @@
 import { execFile } from "node:child_process";
+import fs from "node:fs/promises";
+import path from "node:path";
 import { promisify } from "node:util";
 import { config } from "./config.js";
 import { AgentDecisionSchema } from "./decision.js";
@@ -35,7 +37,7 @@ export async function askOpenClawForDecision(input: {
     { maxBuffer: 1024 * 1024 * 5 }
   );
 
-  return parseOpenClawDecision(stdout);
+  return parseOpenClawDecision(stdout, input.run);
 }
 
 export function buildPrompt(input: {
@@ -60,7 +62,8 @@ export function buildPrompt(input: {
     "Private company/depot/BESS API data:",
     JSON.stringify(input.privateData, null, 2),
     "",
-    "Return strict JSON with this shape:",
+    "Return only one strict JSON object. Do not wrap it in markdown. Do not add prose before or after it.",
+    "The JSON object must have this exact shape:",
     JSON.stringify(
       {
         action: "dispatch_now | schedule_dispatch | skip | human_review",
@@ -75,20 +78,52 @@ export function buildPrompt(input: {
       },
       null,
       2
-    )
+    ),
+    "",
+    "Important: the top-level JSON object must contain action, asset_id, power_kw, duration_minutes, risk_level, confidence, rationale, human_review_required, and settlement_evidence_notes."
   ].join("\n");
 }
 
-function parseOpenClawDecision(stdout: string): AgentDecision {
-  const wrapper = parseJsonObject(stdout);
-  const candidate =
-    getNestedText(wrapper, ["result", "finalAssistantVisibleText"]) ??
-    getNestedText(wrapper, ["result", "finalAssistantRawText"]) ??
-    getNestedText(wrapper, ["result", "payloads", "0", "text"]) ??
-    stdout;
+async function writeDebugOutput(run: number, stdout: string, parsed: unknown): Promise<void> {
+  if (process.env.POWERFLEX_DEBUG_OPENCLAW !== "true") {
+    return;
+  }
 
-  const parsed = parseJsonObject(candidate);
-  return AgentDecisionSchema.parse(parsed);
+  await fs.mkdir(config.outputDir, { recursive: true });
+  await fs.writeFile(
+    path.join(config.outputDir, `openclaw-raw-run-${run}.json`),
+    JSON.stringify({ stdout, parsed }, null, 2),
+    "utf8"
+  );
+}
+
+async function parseOpenClawDecision(stdout: string, run: number): Promise<AgentDecision> {
+  const wrapper = parseJsonObject(stdout);
+  const candidates = [
+    getNestedText(wrapper, ["result", "finalAssistantVisibleText"]),
+    getNestedText(wrapper, ["result", "finalAssistantRawText"]),
+    getNestedText(wrapper, ["result", "payloads", "0", "text"]),
+    ...collectJsonLikeStrings(wrapper),
+    stdout
+  ].filter((candidate): candidate is string => candidate !== undefined);
+
+  for (const candidate of candidates) {
+    const parsed = parseJsonObject(candidate);
+    const direct = AgentDecisionSchema.safeParse(parsed);
+    if (direct.success) {
+      return direct.data;
+    }
+
+    const nested = findDecisionObject(parsed);
+    if (nested) {
+      return nested;
+    }
+  }
+
+  await writeDebugOutput(run, stdout, wrapper);
+  throw new Error(
+    `OpenCLAW returned JSON, but no valid PowerFlex decision was found. Set POWERFLEX_DEBUG_OPENCLAW=true to write outputs/openclaw-raw-run-${run}.json`
+  );
 }
 
 function parseJsonObject(text: string): unknown {
@@ -99,10 +134,69 @@ function parseJsonObject(text: string): unknown {
     const jsonStart = trimmed.indexOf("{");
     const jsonEnd = trimmed.lastIndexOf("}");
     if (jsonStart === -1 || jsonEnd === -1 || jsonEnd <= jsonStart) {
+      const fenced = extractFencedJson(trimmed);
+      if (fenced) {
+        return JSON.parse(fenced) as unknown;
+      }
       throw new Error("PowerFlex agent output did not include a JSON object");
     }
     return JSON.parse(trimmed.slice(jsonStart, jsonEnd + 1)) as unknown;
   }
+}
+
+function extractFencedJson(text: string): string | undefined {
+  const match = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  return match?.[1]?.trim();
+}
+
+function collectJsonLikeStrings(value: unknown): string[] {
+  const strings: string[] = [];
+
+  function visit(current: unknown): void {
+    if (typeof current === "string") {
+      const trimmed = current.trim();
+      if (trimmed.includes("{") && trimmed.includes("}")) {
+        strings.push(trimmed);
+      }
+      return;
+    }
+
+    if (Array.isArray(current)) {
+      current.forEach(visit);
+      return;
+    }
+
+    if (current !== null && typeof current === "object") {
+      Object.values(current).forEach(visit);
+    }
+  }
+
+  visit(value);
+  return strings;
+}
+
+function findDecisionObject(value: unknown): AgentDecision | undefined {
+  const direct = AgentDecisionSchema.safeParse(value);
+  if (direct.success) {
+    return direct.data;
+  }
+
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const found = findDecisionObject(item);
+      if (found) return found;
+    }
+    return undefined;
+  }
+
+  if (value !== null && typeof value === "object") {
+    for (const item of Object.values(value)) {
+      const found = findDecisionObject(item);
+      if (found) return found;
+    }
+  }
+
+  return undefined;
 }
 
 function getNestedText(value: unknown, path: string[]): string | undefined {
