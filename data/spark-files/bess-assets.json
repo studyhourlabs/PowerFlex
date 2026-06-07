@@ -1,0 +1,14 @@
+{
+  "assets": [
+    {
+      "asset_id": "BESS-HAL-01",
+      "status": "available",
+      "capacity_kwh": 250,
+      "state_of_charge_percent": 72,
+      "max_discharge_kw": 100,
+      "max_charge_kw": 90,
+      "round_trip_efficiency_percent": 91,
+      "reserved_for_resilience_percent": 35
+    }
+  ]
+}

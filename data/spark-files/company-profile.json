@@ -1,0 +1,13 @@
+{
+  "company": "PowerFlex Depot Energy",
+  "depot": "Halstead",
+  "business_goal": "Earn flexibility revenue while protecting depot operations and preserving enough battery reserve for evening charger peaks.",
+  "policies": {
+    "minimum_utilisation_price_gbp_per_mwh": 300,
+    "max_low_risk_power_kw": 80,
+    "max_auto_dispatch_duration_minutes": 60,
+    "human_review_required_for_risk": ["high"],
+    "blackout_windows_local": ["07:30-09:30", "16:30-18:30"],
+    "minimum_battery_reserve_percent": 35
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "powerflex-demo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo": "tsx src/main.ts",
+    "demo:fast": "DEMO_INTERVAL_MS=2000 tsx src/main.ts",
+    "mock-private-api": "tsx src/mock-private-api.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "zod": "^3.25.67"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2"
+  }
+}

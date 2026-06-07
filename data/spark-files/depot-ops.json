@@ -1,0 +1,9 @@
+{
+  "depot_id": "HAL",
+  "site_import_limit_kw": 250,
+  "site_export_limit_kw": 120,
+  "normal_operating_load_kw": 95,
+  "charger_peak_load_kw": 140,
+  "dispatch_preference": "prefer_bess_before_ev_charger_disruption",
+  "operator_contact": "human-review-demo@example.invalid"
+}
