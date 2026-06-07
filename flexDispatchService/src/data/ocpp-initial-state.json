@@ -1,0 +1,276 @@
+{
+  "depot": {
+    "depot_id": "DEPOT-HALSTEAD-01",
+    "name": "GridPilot Halstead EV Depot",
+    "zone": "Halstead",
+    "postcode": "CO9 2EX",
+    "registered_flex_zone": "Halstead",
+    "site_import_limit_kw": 750,
+    "current_site_import_kw": 412,
+    "baseline_site_import_kw": 462,
+    "local_timezone": "Europe/London"
+  },
+  "chargers": [
+    {
+      "charger_id": "CH-HAL-01",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-01",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 7,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-02",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-02",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 7,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-03",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-03",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 7,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-04",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-04",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 7,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-05",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-05",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 7,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-06",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-06",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 7,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-07",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-07",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 7,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-08",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-08",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 0,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-09",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-09",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 0,
+      "last_command": null
+    },
+    {
+      "charger_id": "CH-HAL-10",
+      "asset_type": "ev_charger",
+      "ocpp_status": "Charging",
+      "connected_vehicle_id": "EV-HAL-10",
+      "current_power_kw": 22,
+      "max_power_kw": 22,
+      "min_power_kw": 0,
+      "last_command": null
+    }
+  ],
+  "vehicles": [
+    {
+      "vehicle_id": "EV-HAL-01",
+      "connected_charger_id": "CH-HAL-01",
+      "state_of_charge_pct": 72,
+      "target_state_of_charge_pct": 90,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 05:30",
+      "route_id": "ROUTE-MED-01",
+      "route_priority": "critical",
+      "can_flex": false,
+      "reason": "Medical route requires 90% charge by 05:30"
+    },
+    {
+      "vehicle_id": "EV-HAL-02",
+      "connected_charger_id": "CH-HAL-02",
+      "state_of_charge_pct": 76,
+      "target_state_of_charge_pct": 92,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 06:00",
+      "route_id": "ROUTE-SCH-02",
+      "route_priority": "critical",
+      "can_flex": false,
+      "reason": "School transport route requires 92% charge by 06:00"
+    },
+    {
+      "vehicle_id": "EV-HAL-03",
+      "connected_charger_id": "CH-HAL-03",
+      "state_of_charge_pct": 70,
+      "target_state_of_charge_pct": 95,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 06:15",
+      "route_id": "ROUTE-CARE-03",
+      "route_priority": "critical",
+      "can_flex": false,
+      "reason": "Care route requires 95% charge by 06:15"
+    },
+    {
+      "vehicle_id": "EV-HAL-04",
+      "connected_charger_id": "CH-HAL-04",
+      "state_of_charge_pct": 81,
+      "target_state_of_charge_pct": 90,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 06:30",
+      "route_id": "ROUTE-URG-04",
+      "route_priority": "critical",
+      "can_flex": false,
+      "reason": "Urgent service route requires 90% charge by 06:30"
+    },
+    {
+      "vehicle_id": "EV-HAL-05",
+      "connected_charger_id": "CH-HAL-05",
+      "state_of_charge_pct": 67,
+      "target_state_of_charge_pct": 85,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 09:00",
+      "route_id": "ROUTE-STD-05",
+      "route_priority": "standard",
+      "can_flex": true
+    },
+    {
+      "vehicle_id": "EV-HAL-06",
+      "connected_charger_id": "CH-HAL-06",
+      "state_of_charge_pct": 71,
+      "target_state_of_charge_pct": 85,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 09:30",
+      "route_id": "ROUTE-STD-06",
+      "route_priority": "standard",
+      "can_flex": true
+    },
+    {
+      "vehicle_id": "EV-HAL-07",
+      "connected_charger_id": "CH-HAL-07",
+      "state_of_charge_pct": 69,
+      "target_state_of_charge_pct": 85,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 10:00",
+      "route_id": "ROUTE-STD-07",
+      "route_priority": "standard",
+      "can_flex": true
+    },
+    {
+      "vehicle_id": "EV-HAL-08",
+      "connected_charger_id": "CH-HAL-08",
+      "state_of_charge_pct": 78,
+      "target_state_of_charge_pct": 80,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 12:30",
+      "route_id": "ROUTE-FLEX-08",
+      "route_priority": "flexible",
+      "can_flex": true
+    },
+    {
+      "vehicle_id": "EV-HAL-09",
+      "connected_charger_id": "CH-HAL-09",
+      "state_of_charge_pct": 82,
+      "target_state_of_charge_pct": 80,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 13:00",
+      "route_id": "ROUTE-FLEX-09",
+      "route_priority": "flexible",
+      "can_flex": true
+    },
+    {
+      "vehicle_id": "EV-HAL-10",
+      "connected_charger_id": "CH-HAL-10",
+      "state_of_charge_pct": 75,
+      "target_state_of_charge_pct": 80,
+      "battery_capacity_kwh": 82,
+      "departure_time_local": "tomorrow 14:00",
+      "route_id": "ROUTE-FLEX-10",
+      "route_priority": "flexible",
+      "can_flex": true
+    }
+  ],
+  "bess": {
+    "asset_id": "BESS-HAL-01",
+    "asset_type": "battery",
+    "state_of_charge_pct": 68,
+    "capacity_kwh": 500,
+    "current_power_kw": 0,
+    "max_discharge_kw": 60,
+    "max_charge_kw": 60,
+    "min_state_of_charge_pct": 25,
+    "status": "Idle",
+    "last_command": null
+  },
+  "hvac": [
+    {
+      "asset_id": "HVAC-HAL-01",
+      "asset_type": "hvac",
+      "current_power_kw": 18,
+      "mode": "normal",
+      "temperature_c": 20.5,
+      "min_temperature_c": 18,
+      "max_temperature_c": 24,
+      "can_flex": true
+    }
+  ],
+  "refrigeration": [
+    {
+      "asset_id": "REF-HAL-01",
+      "asset_type": "refrigeration",
+      "current_power_kw": 12,
+      "temperature_c": 3.8,
+      "min_temperature_c": 2,
+      "max_temperature_c": 5,
+      "can_flex": false,
+      "reason": "Cold-chain policy blocks autonomous refrigeration shedding"
+    }
+  ],
+  "constraints": [
+    "Critical route vehicles cannot be throttled if projected departure SOC would fall below target",
+    "BESS cannot discharge below 25% SOC",
+    "Refrigeration cannot be flexed autonomously",
+    "Cold-chain loads are blocked from autonomous shedding",
+    "Emergency IT and depot safety loads cannot be shed by site-level actions",
+    "Any plan with route SLA risk requires human approval"
+  ],
+  "last_actions": []
+}
