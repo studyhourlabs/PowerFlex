@@ -1,8 +1,88 @@
-# PowerFlex Demo
+# PowerRanger Demo
 
 https://youtu.be/1skbM7RkNg8?si=tNBe11Y5_Q8IanGp
 
-This project demonstrates a PowerFlex workflow for deciding and executing depot battery flexibility actions.
+Please read TLDR important industry context:
+## ======================================================================
+
+## Intro:
+Electricity is not like normal inventory. You cannot just store unlimited excess and use it later. The grid needs constant balancing. As London electrifies transport, buildings and logistics, commercial EV fleets become both a problem and a solution: if unmanaged, they overload the grid; if intelligently controlled, they become flexible assets with value stacking.
+Citadel proof: (https://flex-power.energy/school-of-flex/value-stacking/)
+
+## What we do:
+PowerRanger is a sovereign edge agent that turns commercial EV depots into market-ready flexibility assets. It monitors London grid flexibility signals, reasons over private fleet constraints locally, controls chargers and batteries, verifies delivered flexibility, and generates settlement evidence.
+
+Large-scale batteries are already sophisticated. The underserved opportunity is small distributed demand: EV fleets, depots, small commercial batteries, cold-chain sites, HVAC, refrigeration, small businesses with flexible load.
+
+
+## Dataset: 
+https://ukpowernetworks.opendatasoft.com/explore/assets/ukpn-flexibility-dispatches/view/?page=1
+
+## Hack Track: 
+Economic Systems - The Goal: Build agentic systems that help individuals and organisations make better economic decisions, unlock opportunities, or optimise costs.
+
+
+
+## Impact case for government and economic ops:
+UKPN states that flexibility could help reduce load-related infrastructure expenditure by up to £410 million in the current regulatory period. (https://dso.ukpowernetworks.co.uk/flexibility)
+
+## Impact for people:
+£5.1m savings passed to customers during winter by OctopusEnergy AI balancing (https://kraken.tech/case-studies/octopus-energy)
+
+## Impact for companies with flex assets (EV fleet, stores with refrigerators):
+Smart charging solution allows UPS to increase the number of 7.5-tonne electric trucks operating from its London site from the current limit of 65 to 170, without the need for an upgrade to the power supply connection. 
+(https://www.ukpowernetworksservices.co.uk/case-studies/ups-facilitating-large-fleet-operators-to-go-electric/)
+
+## Recent VC case (YC W26 batch AI flexibility company):
+“For too long flex data lived in spreadsheets. Not anymore!”
+https://www.ycombinator.com/companies/squid
+
+
+
+## How we do it:
+- reads public grid/flex event (Nemoclaw polls API for update via cron)
+- reads private fleet/charger data in spark/nemotron-nano-30B for security and sensitive data sovereignty.
+- computes safe flexibility (reasons through multiple agents (skills specific to the flex type (day-ahead has prediction skills, intraday has real-time decision making)), calculates risk, engages HITL in risk is high and reward is also high)
+- controls non-critical chargers via OCPP API
+- creates settlement report
+
+
+All autonomous.
+
+
+## Example:
+Flexibility opportunity detected
+Zone: South London Flex Zone
+Window: Tomorrow 18:00–19:30
+Requested reduction: 80 kW
+Indicative value: £180/MWh
+
+Agent thinks and acts within guardrails and evals:
+
+Operational analysis:
+- 7 priority vans cannot be throttled
+- 9 standard vans can delay charging by 90 minutes
+- Battery can discharge 30 kW safely
+- Total safe flexibility: 84 kW
+
+Economic analysis:
+- Expected flexibility revenue: £22.68
+- Delivery SLA risk: £0
+- Battery degradation estimate: £2.10
+- Net expected value: £20.58
+
+Decision:
+- Accept 80 kW dispatch, send signal to batteries
+- Gen settlement report (pull telemetry for proof)
+- has telegram and webui integration for human observability and interruption.
+
+
+## ===========================================================================
+
+
+
+
+This project demonstrates a PowerRanger workflow for deciding and executing depot battery flexibility actions.
 
 The TypeScript code handles deterministic orchestration. The OpenCLAW harness handles the reasoning decision. APIs handle all external data and actions.
 
@@ -12,7 +92,7 @@ Each run does this:
 
 1. Fetch public flex events from the UKPN demo API.
 2. Fetch private company, depot, and BESS data from private APIs.
-3. Send the flex event plus private data to the PowerFlex agent.
+3. Send the flex event plus private data to the PowerRanger agent.
 4. Receive a strict JSON decision:
    - `dispatch_now`
    - `schedule_dispatch`
@@ -51,10 +131,10 @@ That is not enough to safely decide whether the depot should participate. The wo
 The decision logic combines both:
 
 ```text
-public flex event + private depot/BESS data -> PowerFlex risk decision
+public flex event + private depot/BESS data -> PowerRanger risk decision
 ```
 
-PowerFlex evaluates:
+PowerRanger evaluates:
 
 1. Is the event still valid and in the correct zone?
 2. Is the utilisation price above the business threshold?
@@ -92,7 +172,7 @@ It does not dispatch for:
 
 The implementation is in `src/action.ts`.
 
-Example OpenCLAW/PowerFlex decision:
+Example OpenCLAW/PowerRanger decision:
 
 ```json
 {
@@ -202,7 +282,7 @@ FLEX_EVENTS_URL=https://ukpn-flex-api.onrender.com/catalog/datasets/ukpn-flexibi
 Private data APIs:
 
 These APIs provide the company-specific context that the public flex event API does not contain.
-PowerFlex needs them to check business policy, depot constraints, and battery capability before deciding whether to dispatch.
+PowerRanger needs them to check business policy, depot constraints, and battery capability before deciding whether to dispatch.
 In production these point to real private services; locally `mock-private-api` serves the JSON payloads from `data/spark-files` through the same API shape.
 
 ```bash
@@ -217,9 +297,9 @@ Battery action API:
 BATTERY_ACTION_URL=https://ukpn-flex-api.onrender.com/ocpp/actions
 ```
 
-## PowerFlex Agent Integration
+## PowerRanger Agent Integration
 
-PowerFlex calls the OpenCLAW harness through the CLI:
+PowerRanger calls the OpenCLAW harness through the CLI:
 
 ```bash
 openclaw agent \
@@ -244,7 +324,7 @@ Defines the demo identity and preferred asset, `BESS-HAL-01`.
 
 `src/main.ts`
 
-Main loop. Runs five iterations, calls the APIs, asks the PowerFlex agent, submits battery action, writes evidence, and sends Telegram.
+Main loop. Runs five iterations, calls the APIs, asks the PowerRanger agent, submits battery action, writes evidence, and sends Telegram.
 
 `src/config.ts`
 
@@ -299,15 +379,15 @@ Unit tests for decision behavior and Telegram message formatting.
 Generated outputs are written outside the project folder:
 
 ```text
-../../outputs/powerflex-settlement-evidence.csv
-../../outputs/powerflex-flex-dashboard.html
+../../outputs/PowerRanger-settlement-evidence.csv
+../../outputs/PowerRanger-flex-dashboard.html
 ```
 
-`powerflex-settlement-evidence.csv`
+`PowerRanger-settlement-evidence.csv`
 
 Audit log for every run. It includes event details, decision, asset, power, duration, risk, confidence, human-review status, action mode, action status, and rationale.
 
-`powerflex-flex-dashboard.html`
+`PowerRanger-flex-dashboard.html`
 
 Small dashboard showing the latest run: decision, risk, asset, event, control action, rationale, and settlement notes.
 
